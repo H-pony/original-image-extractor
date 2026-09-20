@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>原图批量提取器</title>
+<title>帖子图床提取器</title>
 <link rel="stylesheet" href="manager.css">
 </head>
 <body>
 <div class="page">
   <section class="hero" aria-labelledby="hero-title">
     <nav class="topbar" aria-label="页面导航">
-      <a class="brand" href="#top" aria-label="原图批量提取器首页">
+      <a class="brand" href="#top" aria-label="帖子图床提取器首页">
         <span class="brand-symbol" aria-hidden="true">
           <svg viewBox="0 0 40 32" role="img" fill="none">
             <rect x="3" y="4" width="25" height="22" rx="5" stroke="currentColor" stroke-width="3"/>
@@ -19,10 +19,10 @@
             <path d="M31 14v14m0 0-5-5m5 5 5-5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </span>
-        <span>原图批量提取器</span>
+        <span>帖子图床提取器</span>
       </a>
       <div class="nav-links">
-        <a href="#supported-sites">域名</a>
+        <a href="#supported-sites">站点</a>
         <a href="#task-control">任务</a>
         <a href="#progress-overview">进度</a>
       </div>
@@ -30,9 +30,9 @@
     </nav>
 
     <div class="hero-copy" id="top">
-      <p class="eyebrow">通用网页原图下载工具</p>
-      <h1 id="hero-title">把任意网页的<br><span>原图自动归档</span></h1>
-      <p class="hero-subtitle">自定义域名白名单与路径正则，批量抓取正文图片，自动分页、重试，按主题与帖子整理文件夹。</p>
+      <p class="eyebrow">智能原图下载工具</p>
+      <h1 id="hero-title">让高清原图<br><span>自动归档</span></h1>
+      <p class="hero-subtitle">批量抓取帖子正文图片，自动分页、重试，并按人物与帖子整理文件夹。</p>
       <a class="hero-cta" href="#task-control">
         <span>创建下载任务</span>
         <span class="cta-arrow" aria-hidden="true">↗</span>
@@ -44,12 +44,12 @@
         <span class="mini-label">FOLDER</span>
         <span class="folder-shape"></span>
         <strong>自动归档</strong>
-        <small>主题 / 帖子</small>
+        <small>人物 / 帖子</small>
       </div>
       <div class="show-card card-counter card-left-near">
-        <span class="mini-label">ORIGINAL</span>
-        <strong>原图</strong>
-        <small>跳过缩略图</small>
+        <span class="mini-label">4KHD</span>
+        <strong>4K</strong>
+        <small>原尺寸图片</small>
         <span class="mini-progress"><i></i></span>
       </div>
       <div class="show-card card-white card-center-left">
@@ -66,8 +66,8 @@
       </div>
       <div class="show-card card-glass card-right-near">
         <span class="plus-icon">+</span>
-        <strong>自定义</strong>
-        <small>域名与正则可配置</small>
+        <strong>mtldss</strong>
+        <small>标签页批量支持</small>
       </div>
       <div class="show-card card-lime card-right-far">
         <span class="mini-label">SPEED</span>
@@ -83,8 +83,8 @@
   </section>
 
   <div class="capability-strip" aria-label="支持能力">
-    <span><i class="cap-icon">★</i>任意站点</span>
-    <span><i class="cap-icon cap-blue">●</i>自定义正则</span>
+    <span><i class="cap-icon">4K</i>4KHD</span>
+    <span><i class="cap-icon cap-blue">●</i>mtldss</span>
     <span><i class="cap-icon cap-dark">∞</i>不限并发</span>
     <span><i class="cap-icon cap-green">↻</i>自动重试</span>
     <span><i class="cap-icon cap-folder">■</i>多层文件夹</span>
@@ -94,98 +94,49 @@
     <section class="supported-sites" id="supported-sites" aria-labelledby="supported-sites-title">
       <header class="sites-heading">
         <div>
-          <p class="section-kicker">域名配置</p>
-          <h2 id="supported-sites-title">添加要下载的站点，定义识别规则</h2>
+          <p class="section-kicker">支持站点</p>
+          <h2 id="supported-sites-title">点击站点，寻找想下载的帖子</h2>
         </div>
-        <p>所有规则本地保存；首次访问会请求该域名的访问权限。</p>
+        <p>会在新标签页打开，不影响当前下载任务。</p>
       </header>
-
-      <form id="site-form" class="site-form" autocomplete="off">
-        <div class="field">
-          <label for="site-hostname">域名</label>
-          <div class="input-shell">
-            <span class="input-icon" aria-hidden="true">★</span>
-            <input type="text" id="site-hostname" name="hostname" placeholder="例如 example.com" required>
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label for="site-post-pattern">帖子路径正则（可选）</label>
-            <div class="input-shell">
-              <input type="text" id="site-post-pattern" name="postPathPattern" placeholder="^/posts/[^/]+/?$">
-            </div>
-          </div>
-          <div class="field">
-            <label for="site-search-pattern">搜索路径正则（可选）</label>
-            <div class="input-shell">
-              <input type="text" id="site-search-pattern" name="searchPathPattern" placeholder="^/search/([^/]+)/?$">
-            </div>
-          </div>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label for="site-search-q">搜索参数名（可选）</label>
-            <div class="input-shell">
-              <input type="text" id="site-search-q" name="searchQueryParam" placeholder="q">
-            </div>
-          </div>
-          <div class="field">
-            <label for="site-transform">路径标准化</label>
-            <div class="input-shell">
-              <select id="site-transform" name="pathnameTransform">
-                <option value="">不做处理</option>
-                <option value="strip-slash">去掉尾斜杠</option>
-                <option value="page">保留尾斜杠</option>
-                <option value="html-suffix">剥离 .html/N</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <details class="site-advanced">
-          <summary>高级：自定义正文/图片/标题选择器</summary>
-          <div class="field-row">
-            <div class="field">
-              <label for="site-body">正文容器</label>
-              <div class="input-shell">
-                <input type="text" id="site-body" name="postBodySelector" placeholder="article, .post-content">
-              </div>
-            </div>
-            <div class="field">
-              <label for="site-image">图片选择器</label>
-              <div class="input-shell">
-                <input type="text" id="site-image" name="postImageSelector" placeholder="article img">
-              </div>
-            </div>
-          </div>
-          <div class="field-row">
-            <div class="field">
-              <label for="site-title">标题选择器</label>
-              <div class="input-shell">
-                <input type="text" id="site-title" name="postTitleSelector" placeholder="h1, .post-title">
-              </div>
-            </div>
-            <div class="field">
-              <label for="site-title-cleanup">标题清理正则</label>
-              <div class="input-shell">
-                <input type="text" id="site-title-cleanup" name="titleCleanupRegex" placeholder="\s*[-–]\s*站点名\s*$">
-              </div>
-            </div>
-          </div>
-        </details>
-        <div class="actions">
-          <button type="submit" class="btn btn-primary" id="site-save"><span>保存配置</span><i>↗</i></button>
-          <button type="button" class="btn" id="site-cancel-edit" hidden>取消编辑</button>
-          <button type="button" class="btn" id="site-grant">请求当前域名权限</button>
-        </div>
-      </form>
-
-      <div class="site-list" id="site-list" aria-live="polite"></div>
+      <div class="site-grid">
+        <a class="site-card site-4khd" href="https://www.4khd.com/" target="_blank" rel="noopener noreferrer">
+          <span class="site-icon">4K</span>
+          <span class="site-copy">
+            <span class="site-state"><i></i>支持访问</span>
+            <strong>4KHD 主站</strong>
+            <small>www.4khd.com</small>
+          </span>
+          <span class="site-types">搜索 / 帖子</span>
+          <span class="site-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="site-card site-hecoq" href="https://hecoq.uuss.uk/" target="_blank" rel="noopener noreferrer">
+          <span class="site-icon">H</span>
+          <span class="site-copy">
+            <span class="site-state"><i></i>支持访问</span>
+            <strong>HECOQ 镜像</strong>
+            <small>hecoq.uuss.uk</small>
+          </span>
+          <span class="site-types">搜索 / 帖子</span>
+          <span class="site-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="site-card site-mtldss" href="https://mtldss.top/" target="_blank" rel="noopener noreferrer">
+          <span class="site-icon">M</span>
+          <span class="site-copy">
+            <span class="site-state"><i></i>支持访问</span>
+            <strong>mtldss</strong>
+            <small>mtldss.top</small>
+          </span>
+          <span class="site-types">标签 / 帖子</span>
+          <span class="site-arrow" aria-hidden="true">↗</span>
+        </a>
+      </div>
     </section>
 
     <header class="section-lead">
       <p class="section-kicker">下载工作台</p>
       <h2>一个链接，完成抓取、下载和归档<span class="title-orb blue-orb">↓</span></h2>
-      <p>粘贴任意已配置域名的帖子或搜索链接；未配置域名会自动引导你添加。</p>
+      <p>支持 4KHD 搜索与帖子、mtldss 标签与帖子链接。</p>
     </header>
 
     <div class="control-grid">
@@ -202,14 +153,14 @@
             <label for="url">页面链接</label>
             <div class="input-shell">
               <span class="input-icon" aria-hidden="true">↗</span>
-              <input type="url" id="url" name="url" placeholder="粘贴任意已配置站点的链接" required>
+              <input type="url" id="url" name="url" placeholder="粘贴 4KHD 或 mtldss 链接" required>
             </div>
           </div>
           <div class="field folder-field">
             <label for="folder">根文件夹</label>
             <div class="input-shell">
               <span class="input-icon folder-icon" aria-hidden="true">■</span>
-              <input type="text" id="folder" name="folder" value="下载" placeholder="下载">
+              <input type="text" id="folder" name="folder" value="4KHD" placeholder="4KHD">
             </div>
           </div>
           <div class="actions">
@@ -238,7 +189,7 @@
         <progress id="progress" max="100" value="0"></progress>
         <div class="progress-note">
           <span class="note-dot"></span>
-          <span>任务状态自动保存，关闭页面后仍可继续</span>
+          <span>任务状态会自动保存，关闭页面后仍可继续</span>
         </div>
       </section>
     </div>
@@ -260,7 +211,7 @@
         <span class="stat-label">图片总数</span>
         <span class="stat-num" id="image-count">0</span>
         <span class="stat-unit">张</span>
-        <span class="stat-caption">只保留正文原图</span>
+        <span class="stat-caption">只保留帖子正文原图</span>
       </div>
       <div class="stat stat-black">
         <span class="stat-label">已完成</span>

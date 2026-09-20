@@ -1,11 +1,18 @@
 {
   "manifest_version": 3,
-  "name": "原图批量提取器",
-  "version": "1.5.0",
-  "description": "通用网页原图批量下载：自定义域名白名单与路径正则，按主题与帖子自动归档，自动重试失败项。",
+  "name": "帖子图床提取器",
+  "version": "1.4.1",
+  "description": "支持 4KHD 搜索和 mtldss 标签页，按人物和帖子分类下载正文图片，失败时自动重试。",
   "minimum_chrome_version": "109",
-  "permissions": ["downloads", "storage", "optional_host_permissions"],
-  "host_permissions": [],
+  "permissions": ["downloads", "storage"],
+  "host_permissions": [
+    "https://hecoq.uuss.uk/*",
+    "https://www.4khd.com/*",
+    "https://4khd.com/*",
+    "https://mtldss.top/*",
+    "https://www.mtldss.top/*",
+    "https://img.mtldss.top/*"
+  ],
   "icons": {
     "16": "assets/icon-16.png",
     "32": "assets/icon-32.png",
@@ -13,7 +20,7 @@
     "128": "assets/icon-128.png"
   },
   "action": {
-    "default_title": "打开原图批量提取器",
+    "default_title": "打开帖子图床提取器",
     "default_icon": {
       "16": "assets/icon-16.png",
       "32": "assets/icon-32.png"

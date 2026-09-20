@@ -1,14 +1,7 @@
-// 原图批量提取器 - 任务管理界面
 (() => {
   const core = globalThis.DownloaderCore;
   const $ = id => document.getElementById(id);
-  const STORAGE_TASK = 'task';
-  const STORAGE_SITES = 'sites';
-  const STATE_VERSION = 4;
-
-  let state = null;          // 当前任务（含 site 快照）
-  let sites = [];            // 用户配置的站点列表 [{ hostname, postPathPattern, ... }]
-  let editingHostname = null;
+  let state = null;
   let running = false;
   let stopping = false;
   let controller = null;
@@ -30,7 +23,6 @@
   const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
   function log(text) {
-    if (!state) return;
     state.logs.unshift(`${new Date().toLocaleTimeString()}  ${text}`);
     state.logs = state.logs.slice(0, 150);
   }
@@ -65,134 +57,13 @@
 
   function save() {
     render();
-    const snapshot = state ? structuredClone(state) : null;
-    storageChain = storageChain.catch(() => {})
-      .then(() => chrome.storage.local.set({ [STORAGE_TASK]: snapshot }));
+    const snapshot = structuredClone(state);
+    storageChain = storageChain.catch(() => {}).then(() => chrome.storage.local.set({ task: snapshot }));
     return storageChain;
-  }
-
-  async function saveSites() {
-    await chrome.storage.local.set({ [STORAGE_SITES]: sites });
-    renderSites();
   }
 
   function enqueue(url, kind, post = null) {
     if (!state.pages.some(page => page.url === url)) state.pages.push({ url, kind, post, status: 'pending' });
-  }
-
-  function findSiteByHostname(hostname) {
-    return sites.find(s => s.hostname === hostname) || null;
-  }
-
-  function urlSite(value) {
-    try {
-      const url = new URL(value);
-      return findSiteByHostname(url.hostname);
-    } catch { return null; }
-  }
-
-  async function ensureOriginPermission(origin) {
-    try {
-      return await chrome.permissions.contains({ origins: [`https://${origin}/*`] });
-    } catch {
-      return false;
-    }
-  }
-
-  async function requestOriginPermission(origin) {
-    if (!origin || !/^[a-z0-9.-]+$/i.test(origin)) {
-      throw new Error('域名格式无效，请填写形如 example.com 的主机名');
-    }
-    const granted = await chrome.permissions.request({ origins: [`https://${origin}/*`] });
-    if (!granted) throw new Error(`未授予 ${origin} 的访问权限，无法抓取或下载该站点`);
-    return true;
-  }
-
-  function fillSiteForm(site) {
-    const fields = ['hostname', 'postPathPattern', 'searchPathPattern', 'searchQueryParam', 'pathnameTransform',
-      'postBodySelector', 'postImageSelector', 'postTitleSelector', 'titleCleanupRegex'];
-    for (const f of fields) $(`site-${toInputId(f)}`).value = site[f] || '';
-    $('site-cancel-edit').hidden = false;
-    editingHostname = site.hostname;
-  }
-
-  function clearSiteForm() {
-    const ids = ['hostname', 'post-pattern', 'search-pattern', 'search-q', 'transform',
-      'body', 'image', 'title', 'title-cleanup'];
-    for (const id of ids) $(`site-${id}`).value = '';
-    $('site-cancel-edit').hidden = true;
-    editingHostname = null;
-  }
-
-  function toInputId(name) {
-    const map = {
-      hostname: 'hostname',
-      postPathPattern: 'post-pattern',
-      searchPathPattern: 'search-pattern',
-      searchQueryParam: 'search-q',
-      pathnameTransform: 'transform',
-      postBodySelector: 'body',
-      postImageSelector: 'image',
-      postTitleSelector: 'title',
-      titleCleanupRegex: 'title-cleanup',
-    };
-    return map[name] || name;
-  }
-
-  function renderSites() {
-    const list = $('site-list');
-    list.replaceChildren();
-    if (!sites.length) {
-      const empty = document.createElement('div');
-      empty.className = 'site-item-empty';
-      empty.textContent = '尚未配置任何站点；先在上方表单添加一个域名再开始任务。';
-      list.append(empty);
-      return;
-    }
-    for (const site of sites) {
-      const card = document.createElement('div');
-      card.className = 'site-item';
-      const badge = document.createElement('span');
-      badge.className = 'site-item-badge';
-      badge.textContent = (site.hostname[0] || '?').toUpperCase();
-      const copy = document.createElement('div');
-      copy.className = 'site-item-copy';
-      const name = document.createElement('strong');
-      name.textContent = site.hostname;
-      const meta = document.createElement('small');
-      const parts = [];
-      if (site.postPathPattern) parts.push(`<code>post</code> ${shorten(site.postPathPattern)}`);
-      if (site.searchPathPattern) parts.push(`<code>search</code> ${shorten(site.searchPathPattern)}`);
-      if (site.searchQueryParam) parts.push(`<code>?${escapeHTML(site.searchQueryParam)}=…</code>`);
-      meta.innerHTML = parts.length ? parts.join(' · ') : '使用智能默认（任何路径都视为单页）';
-      copy.append(name, meta);
-      const actions = document.createElement('div');
-      actions.className = 'site-item-actions';
-      const edit = document.createElement('button');
-      edit.type = 'button';
-      edit.title = '编辑';
-      edit.dataset.action = 'edit';
-      edit.dataset.host = site.hostname;
-      edit.textContent = '✎';
-      const del = document.createElement('button');
-      del.type = 'button';
-      del.title = '删除';
-      del.dataset.action = 'delete';
-      del.dataset.host = site.hostname;
-      del.textContent = '×';
-      actions.append(edit, del);
-      card.append(badge, copy, actions);
-      list.append(card);
-    }
-  }
-
-  function shorten(value, max = 32) {
-    const s = String(value);
-    return s.length > max ? `${s.slice(0, max - 1)}…` : s;
-  }
-
-  function escapeHTML(value) {
-    return String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
   }
 
   async function readPage(page) {
@@ -202,12 +73,11 @@
       const response = await fetch(page.url, { credentials: 'include', signal: controller.signal });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const mapped = core.siteLink(response.url, page.url, state.origin);
-      if (!mapped) throw new Error('页面跳转到其他域名，无法继续');
-      if (page.kind === 'post' ? core.postRoot(mapped, state.site) !== page.post : core.searchKey(mapped, state.site) !== core.searchKey(page.url, state.site)) {
+      if (!mapped || (page.kind === 'post' ? core.postRoot(mapped) !== page.post : core.searchKey(mapped) !== core.searchKey(page.url))) {
         throw new Error('页面跳转到非目标帖子或登录页');
       }
       const html = await response.text();
-      return core.parsePage(html, page.url, page.kind, state.origin, state.site);
+      return core.parsePage(html, page.url, page.kind, state.origin);
     } finally {
       clearTimeout(timer);
       controller = null;
@@ -410,109 +280,17 @@
     }
   }
 
-  function readSiteForm() {
-    const get = id => $(`site-${id}`).value.trim();
-    const hostname = get('hostname').toLowerCase();
-    if (!hostname) throw new Error('请填写域名');
-    const transformValue = get('transform');
-    const site = {
-      hostname,
-      postPathPattern: get('post-pattern') || null,
-      searchPathPattern: get('search-pattern') || null,
-      searchQueryParam: get('search-q') || null,
-      pathnameTransform: transformValue || null,
-      postBodySelector: get('body') || null,
-      postImageSelector: get('image') || null,
-      postTitleSelector: get('title') || null,
-      titleCleanupRegex: get('title-cleanup') || null,
-    };
-    if (!/^[a-z0-9.-]+$/.test(hostname)) throw new Error('域名格式无效，请填写形如 example.com 的主机名');
-    // 预编译正则确保有效
-    if (site.postPathPattern) core.compile({ ...site });
-    return site;
-  }
-
-  $('site-form').addEventListener('submit', async event => {
-    event.preventDefault();
-    try {
-      const site = readSiteForm();
-      const granted = await ensureOriginPermission(site.hostname);
-      if (!granted) await requestOriginPermission(site.hostname);
-      if (editingHostname && editingHostname !== site.hostname) {
-        sites = sites.filter(s => s.hostname !== editingHostname);
-      }
-      const idx = sites.findIndex(s => s.hostname === site.hostname);
-      if (idx >= 0) sites[idx] = site;
-      else sites.push(site);
-      await saveSites();
-      clearSiteForm();
-      $('status').textContent = `已保存站点：${site.hostname}`;
-    } catch (error) {
-      $('status').textContent = `保存失败：${error.message}`;
-    }
-  });
-
-  $('site-cancel-edit').addEventListener('click', clearSiteForm);
-
-  $('site-grant').addEventListener('click', async () => {
-    try {
-      const url = $('url').value.trim();
-      if (!url) throw new Error('请先在「页面链接」框粘贴一个 URL');
-      const hostname = new URL(url).hostname;
-      await requestOriginPermission(hostname);
-      $('status').textContent = `已授予 ${hostname} 的访问权限`;
-    } catch (error) {
-      $('status').textContent = `权限请求失败：${error.message}`;
-    }
-  });
-
-  $('site-list').addEventListener('click', async event => {
-    const button = event.target.closest('button[data-action]');
-    if (!button) return;
-    const host = button.dataset.host;
-    if (button.dataset.action === 'edit') {
-      const site = findSiteByHostname(host);
-      if (site) fillSiteForm(site);
-    } else if (button.dataset.action === 'delete') {
-      if (!confirm(`删除站点配置 ${host}？正在运行的任务不受影响。`)) return;
-      sites = sites.filter(s => s.hostname !== host);
-      await saveSites();
-      if (editingHostname === host) clearSiteForm();
-    }
-  });
-
   $('task-form').addEventListener('submit', async event => {
     event.preventDefault();
     if (state || running) return;
     try {
-      const value = $('url').value.trim();
-      let hostname;
-      try { hostname = new URL(value).hostname; } catch { throw new Error('URL 格式无效'); }
-      let site = urlSite(value);
-      if (!site) {
-        // 没有配置：自动创建一份空白配置，让用户填写后再开始
-        const granted = await ensureOriginPermission(hostname);
-        if (!granted) await requestOriginPermission(hostname);
-        site = { hostname };
-        const idx = sites.findIndex(s => s.hostname === hostname);
-        if (idx >= 0) sites[idx] = site;
-        else sites.push(site);
-        await saveSites();
-        fillSiteForm(site);
-        $('status').textContent = `域名 ${hostname} 未配置，已自动添加。请填写正则后再次提交任务`;
-        return;
-      }
-      if (!await ensureOriginPermission(hostname)) {
-        await requestOriginPermission(hostname);
-      }
-      const compiled = core.compile(site);
-      const input = core.inputURL(value, compiled);
-      state = { version: STATE_VERSION, ...input, folder: core.safeName($('folder').value, '下载'), startedAt: new Date().toISOString(), status: 'paused', current: '', posts: {}, pages: [], images: [], logs: [], site: { hostname: site.hostname, ...compiled } };
+      const input = core.inputURL($('url').value);
+      state = { version: 3, ...input, folder: core.safeName($('folder').value, '4KHD'), startedAt: new Date().toISOString(), status: 'paused', current: '', posts: {}, pages: [], images: [], logs: [] };
       if (input.kind === 'post') state.posts[input.url] = { title: '', count: 0 };
       enqueue(input.url, input.kind, input.kind === 'post' ? input.url : null);
       log(input.kind === 'search'
-        ? `任务已创建：将按"${state.folder}/${core.safeName(state.person, '未命名人物')}/帖子"分类下载`
-        : `任务已创建：将按"${state.folder}/帖子"分类下载`);
+        ? `任务已创建：将按“${state.folder}/${core.safeName(state.person, '未命名人物')}/帖子”分类下载`
+        : `任务已创建：将按“${state.folder}/帖子”分类下载`);
       await run();
     } catch (error) {
       $('status').textContent = error.message;
@@ -544,32 +322,22 @@
     await save();
   });
 
-  async function migrateState(saved) {
-    if (!saved) return null;
-    if (saved.version === STATE_VERSION) return saved;
-    // 老 state：根据 url.origin 找回 site 配置
-    let site = null;
-    try { site = urlSite(saved.url); } catch {}
-    return { ...saved, version: STATE_VERSION, site: site ? { hostname: site.hostname, ...core.compile(site) } : null };
-  }
-
   async function initialize() {
-    const data = await chrome.storage.local.get([STORAGE_TASK, STORAGE_SITES]);
-    sites = Array.isArray(data[STORAGE_SITES]) ? data[STORAGE_SITES] : [];
-    state = await migrateState(data[STORAGE_TASK]);
+    const saved = await chrome.storage.local.get('task');
+    state = saved.task || null;
     if (state) {
       if (state.status === 'running') state.status = 'paused';
       $('url').value = state.url;
       $('folder').value = state.folder;
       applyFlowStats(await reconcile());
+      state.version = 3;
       await save();
     }
     render();
-    renderSites();
   }
 
   for (const id of ['start', 'pause', 'resume', 'retry', 'reset']) $(id).disabled = true;
-  navigator.locks.request('downloader-task-manager', { ifAvailable: true }, async lock => {
+  navigator.locks.request('4khd-task-manager', { ifAvailable: true }, async lock => {
     if (!lock) {
       $('status').textContent = '另一个下载器标签页已打开，请在原标签页操作';
       return;
