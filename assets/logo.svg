@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">帖子图床提取器 Logo</title>
+  <desc id="desc">层叠帖子图片与向下提取箭头的组合标志</desc>
+  <defs>
+    <linearGradient id="background" x1="72" y1="56" x2="444" y2="464" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0878B8"/>
+      <stop offset="1" stop-color="#09B8E7"/>
+    </linearGradient>
+    <filter id="shadow" x="42" y="48" width="430" height="430" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#034766" flood-opacity=".28"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#background)"/>
+  <circle cx="98" cy="92" r="62" fill="#7DE1F8" fill-opacity=".2"/>
+  <circle cx="435" cy="405" r="94" fill="#006FA8" fill-opacity=".2"/>
+  <g filter="url(#shadow)">
+    <rect x="137" y="86" width="270" height="282" rx="52" fill="#D6F7FF" fill-opacity=".58" transform="rotate(7 137 86)"/>
+    <rect x="77" y="72" width="292" height="308" rx="54" fill="white"/>
+    <circle cx="146" cy="149" r="28" fill="#08AEE5"/>
+    <path d="M111 309 187 224l53 55 39-43 57 73H111Z" fill="#111211"/>
+    <path d="M110 115h157" stroke="#D9DDDA" stroke-width="18" stroke-linecap="round"/>
+  </g>
+  <circle cx="362" cy="359" r="91" fill="#C5FF47" stroke="white" stroke-width="12"/>
+  <path d="M362 307v85m0 0-35-35m35 35 35-35" fill="none" stroke="#111211" stroke-width="27" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

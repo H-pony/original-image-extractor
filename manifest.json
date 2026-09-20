@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "原图批量提取器",
+  "version": "1.5.0",
+  "description": "通用网页原图批量下载：自定义域名白名单与路径正则，按主题与帖子自动归档，自动重试失败项。",
+  "minimum_chrome_version": "109",
+  "permissions": ["downloads", "storage", "optional_host_permissions"],
+  "host_permissions": [],
+  "icons": {
+    "16": "assets/icon-16.png",
+    "32": "assets/icon-32.png",
+    "48": "assets/icon-48.png",
+    "128": "assets/icon-128.png"
+  },
+  "action": {
+    "default_title": "打开原图批量提取器",
+    "default_icon": {
+      "16": "assets/icon-16.png",
+      "32": "assets/icon-32.png"
+    }
+  },
+  "background": { "service_worker": "background.js" }
+}

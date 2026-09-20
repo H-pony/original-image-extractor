@@ -1,0 +1,23 @@
+# Node / Python 临时文件
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Chrome 扩展开发期产生的临时目录（构建/解包后的扩展目录）
+# 保留源码即可，不上传 dist
+dist/
+build/
+
+# Python 测试产物
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 用户私有备份（避免误提交）
+*.bak
+*.tmp
